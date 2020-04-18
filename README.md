@@ -7,7 +7,9 @@ The goal of our project
 
 # Dependencies
 python version >= 3.6
+pip
 numpy
+gym
 
 
 # How to run an example
@@ -18,6 +20,7 @@ python runsim.py
 * runsim.py
 
 * map.py:
+  implements and initializes
 
 * robot.py:
 
