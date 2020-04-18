@@ -7,6 +7,9 @@ from gym import spaces
 from environmentPlot import EnvironmentPlot
 
 ACTION_LIST = ["forward", "backward", "turn_left", "turn_right", "stop", "turn_and_move_right", "turn_and_move_right"]
+#[stop, turn left, turn right, forward, forward left, forwards right]
+#linear vel = [0,1]
+#anglar ve = [-1, 0, 1]
 N_DISCRETE_ACTIONS = len(ACTION_LIST)
 
 Z_LIST = ["nothing", "n_wall", "e_wall", "s_wall", "w_wall", "n_bot", "e_bot", "s_bot", "w_bot"]
