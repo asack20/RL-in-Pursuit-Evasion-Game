@@ -1,5 +1,4 @@
 import numpy as np
-from map import Map
 
 class Robot:
 
@@ -8,11 +7,10 @@ class Robot:
     # fov - field of view in radians
     # vel (forward vel, angular vel)
     # Map m
-
+    SENSOR_NOISE_COEF = 0.1
     # Initializer / Instance Attributes
     # Sets initializes robot pose and properties
-    def __init__(self, m, init_pose, fov):
-        self.m = m
+    def __init__(self, init_pose, fov):
         self.pose = init_pose
         self.fov = fov
 
@@ -35,3 +33,16 @@ class Robot:
     #returns cell indicies for where robot is located
     def inCell(self):
         return (self.pose[0]//1, self.pose[1]//1)
+
+    def senseRobot(self, other_pose):
+
+
+        dist = np.sqrt(np.square(self.pose[0]-other_pose[0]) + np.square(self.pose[1]-other_pose[1]))
+        ang =  np.arctan2(other_pose[1]-self.pose[1], other_pose[0]-self.pose[0])
+
+        if np.abs(ang - self.pose[2]) <= self.fov/2:
+            reading = np.round(dist + dist * np.random.default_rng().normal() * SENSOR_NOISE_COEF)
+
+
+        return reading
+#10 substeps
