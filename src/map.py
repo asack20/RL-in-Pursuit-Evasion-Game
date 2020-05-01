@@ -34,7 +34,7 @@ class Map:
 
     def checkForObstacle(self, x, y):
         # check if the desired next state is a wall ( == 1)
-        if self.grid[x][y] == 1:
+        if self.grid[x,y] == 1:
             # return initial state if obstacle found
             return True
         else:
@@ -47,7 +47,7 @@ class Map:
     def senseEvader(self):
         return self.r_e.senseRobot(self.r_p.pose)
 
-    def haveCollided():
+    def haveCollided(self):
         dist = np.sqrt(np.square(self.r_p.pose[0]-self.r_e.pose[0]) + np.square(self.r_p.pose[1]-self.r_e.pose[1]))
         if dist <= 1:
             return True

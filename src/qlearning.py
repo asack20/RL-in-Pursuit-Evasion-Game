@@ -4,9 +4,10 @@
 import gym
 import numpy as np
 from map import Map
-
+import matplotlib.pyplot as plt
 from gym import spaces, error, utils
 from gym.utils import seeding
+import time
 
 
 #linear vel = [0, 1]
@@ -16,7 +17,7 @@ ACTION_LIST = [(0, 0), (1,0), (0,-1), (0, 1), (1, -1), (1, 1)]
 N_DISCRETE_ACTIONS = len(ACTION_LIST)
 
 
-Z_LIST = [0, 1, 2, 3, 4, 5]
+Z_LIST = [0, 1, 2, 3, 4, 5, 6]
 N_DISCRETE_Z = len(Z_LIST)
 
 HEIGHT = 100
@@ -35,23 +36,26 @@ class TurtleBotTag(gym.Env):
         # Define action and observation space
         # They must be gym.spaces objects
         self.fig = plt.figure()
-        self.ax = self.fig.axes()
+        self.ax = self.fig.axes
 
         # Obtain current map for training
         self.map = Map()
         self.current_grid = self.map.grid
 
         # Get map bounds
-        self.height = self.current_map.grid_sz[0]
-        self.width = self.current_map.grid_sz[1]
+        self.height = self.map.grid_sz[0]
+        self.width = self.map.grid_sz[1]
         self.theta = THETA
+        self.observations = N_DISCRETE_Z
 
         # Establish Discrete Actions:
         self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)
 
         # Establish Observation Space: ADD ROBOT POSE
-        self.observation_space = spaces.Box(low=0, high=N_DISCRETE_Z, shape =
-                                    (HEIGHT, WIDTH, THETA), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=1, shape =
+                                    (self.height, self.width, self.theta, self.observations), dtype=np.uint8)
+        self.Q_dim = (self.height, self.width, self.theta, self.observations, self.action_space.n)
+
         #self.observation_space = spaces.Box(low=0, high=width, shape=
         #                (HEIGHT, WIDTH), dtype=np.uint8)
 
@@ -72,10 +76,10 @@ class TurtleBotTag(gym.Env):
         p_observation = self.map.senseEvader()
         e_observation = self.map.sensePursuer()
 
-        p_state = np.array([p_pose[0], p_pose[1], p_pose[2], p_observation])
-        e_state = np.array([e_pose[0], e_pose[1], e_pose[2], e_observation])
+        p_state = tuple([int(x) for x in np.array([p_pose[0], p_pose[1], p_pose[2], p_observation])])
+        e_state = tuple([int(x) for x in np.array([e_pose[0], e_pose[1], e_pose[2], e_observation])])
 
-        done = self.haveCollided()
+        done = self.map.haveCollided()
 
         if done == True:
             p_reward = 100
@@ -96,6 +100,17 @@ class TurtleBotTag(gym.Env):
         self.p_observation = self.map.senseEvader()
         self.e_observation = self.map.sensePursuer()
 
+        p_pose = self.map.r_p.pose
+        e_pose = self.map.r_e.pose
+
+        p_observation = self.map.senseEvader()
+        e_observation = self.map.sensePursuer()
+
+        p_state = tuple([int(x) for x in np.array([p_pose[0], p_pose[1], p_pose[2], p_observation])])
+        e_state = tuple([int(x) for x in np.array([e_pose[0], e_pose[1], e_pose[2], e_observation])])
+
+        return p_state, e_state
+
     # define states as state =  (y, x, theta)
 
 
@@ -115,12 +130,14 @@ class TurtleBotTag(gym.Env):
 
         return (x, y, theta)
 
-    def render(self, mode='human', close=False, **kwargs):
+    def render(self):
         # Render the environment to the screen
 
-        self.ax.imshow(self.ax, self.map.grid, origin='lower')
-        self.ax.plot(m.r_p.pose[0], m.r_p.pose[1], 'bo', label='Pursuer')
-        self.ax.plot(m.r_e.pose[0], m.r_e.pose[1], 'ro', label='Evader')
-        self.ax.legend()
+        plt.imshow(self.map.grid, origin='lower')
+        plt.plot(self.map.r_p.pose[0], self.map.r_p.pose[1], 'bo', label='Pursuer')
+        plt.plot(self.map.r_e.pose[0], self.map.r_e.pose[1], 'ro', label='Evader')
+        plt.legend()
         # Show the graph without blocking the rest of the program
-        self.fig.show(block=False)
+
+        plt.draw()
+        plt.pause(0.05)

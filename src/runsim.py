@@ -34,8 +34,7 @@ def main():
 
     # 1. Load Environment and Q-table structure
     env = TurtleBotTag()
-    Q = np.zeros([env.observation_space.n,env.action_space.n])
-    # env.obeservation.n, env.action_space.n gives number of states and action in env loaded
+    Q = np.zeros(env.Q_dim)
 
     # 2. Parameters of Q-leanring
     eta = .628
@@ -46,7 +45,8 @@ def main():
     # 3. Q-learning Algorithm
     for i in range(epis):
         # Reset environment
-        s = env.reset()
+        s, s_other = env.reset()
+
         rAll = 0
         d = False
         j = 0
@@ -55,9 +55,11 @@ def main():
             env.render()
             j+=1
             # Choose action from Q table
-            a = np.argmax(Q[s,:] + np.random.randn(1,env.action_space.n)*(1./(i+1)))
+            a = np.argmax(Q[s] + np.random.randn(1,env.action_space.n)*(1./(i+1)))
+            print(Q[s].shape)
+
             #Get new state & reward from environment
-            s1,r,d,_ = env.step(a)
+            s1, s2, r, r2, d = env.step(a)
             #Update Q-Table with new knowledge
             Q[s,a] = Q[s,a] + eta*(r + gma*np.max(Q[s1,:]) - Q[s,a])
             rAll += r
