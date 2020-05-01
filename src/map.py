@@ -17,8 +17,8 @@ class Map:
             for j in range(self.grid_sz[1]//10):
                 self.grid[(i*10):(i*10)+5, (j*10):(j*10)+5] = np.ones((5,5))
 
-        self.r_p = Robot((5,5,0), np.pi/2)
-        self.r_e = Robot((15,10,0), np.pi/2)
+        self.r_p = Robot((0,0,0), np.pi/2)
+        self.r_e = Robot((0,0,0), np.pi/2)
 
     # Checks if input is in an open space in Map
     def validSpace(self, pose):
@@ -32,6 +32,30 @@ class Map:
         else:
             return True
 
+    def checkForObstacle(self, x, y):
+        # check if the desired next state is a wall ( == 1)
+        if self.grid[x][y] == 1:
+            # return initial state if obstacle found
+            return True
+        else:
+            # return next state if no obstacle found
+            return False
+
+    def sensePursuer(self):
+        return self.r_p.senseRobot(self.r_e.pose)
+
+    def senseEvader(self):
+        return self.r_e.senseRobot(self.r_p.pose)
+
+    def haveCollided():
+        dist = np.sqrt(np.square(self.r_p.pose[0]-self.r_e.pose[0]) + np.square(self.r_p.pose[1]-self.r_e.pose[1]))
+        if dist <= 1:
+            return True
+        else:
+            return False
+
+
+    # Does nothing
     # Returns state of surrounding tiles (no robot)
     def getSurroundings(self, pose):
         # 0  open, 1 wall/outofbounds, 2 Robot

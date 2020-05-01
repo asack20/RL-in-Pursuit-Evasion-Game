@@ -3,37 +3,43 @@
 
 import gym
 import numpy as np
-import map
+from map import Map
+
 from gym import spaces, error, utils
 from gym.utils import seeding
-from environmentPlot import EnvironmentPlot
 
-ACTION_LIST = ["forward", "backward", "turn_left", "turn_right", "stop", "turn_and_move_right", "turn_and_move_right"]
-#[stop, turn left, turn right, forward, forward left, forwards right]
-#linear vel = [0,1]
-#angular ve = [-1, 0, 1]
+
+#linear vel = [0, 1]
+#angular vel = [-1, 0, 1]
+#ACTION_LIST = ["stop", "forward", "turn_left", "turn_right", "turn_and_move_left", "turn_and_move_right"]
+ACTION_LIST = [(0, 0), (1,0), (0,-1), (0, 1), (1, -1), (1, 1)]
 N_DISCRETE_ACTIONS = len(ACTION_LIST)
 
-#
-Z_LIST = ["n", "e", "s", "w"]
+
+Z_LIST = [0, 1, 2, 3, 4, 5]
 N_DISCRETE_Z = len(Z_LIST)
 
 HEIGHT = 100
 WIDTH = 100
 THETA = 4
 
+
+
 class TurtleBotTag(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
 
 
-    def __init__(self, map=None):
+    def __init__(self):
         super(TurtleBotTag, self).__init__()
         # Define action and observation space
         # They must be gym.spaces objects
+        self.fig = plt.figure()
+        self.ax = self.fig.axes()
 
         # Obtain current map for training
-        self.current_map = map.Map
+        self.map = Map()
+        self.current_grid = self.map.grid
 
         # Get map bounds
         self.height = self.current_map.grid_sz[0]
@@ -45,7 +51,7 @@ class TurtleBotTag(gym.Env):
 
         # Establish Observation Space: ADD ROBOT POSE
         self.observation_space = spaces.Box(low=0, high=N_DISCRETE_Z, shape =
-                                    (HEIGHT, WIDTH, THETA), dtype_np.uint8)
+                                    (HEIGHT, WIDTH, THETA), dtype=np.uint8)
         #self.observation_space = spaces.Box(low=0, high=width, shape=
         #                (HEIGHT, WIDTH), dtype=np.uint8)
 
@@ -56,48 +62,65 @@ class TurtleBotTag(gym.Env):
         # Execute one time step within the environment
         # pursuer and evader sense and then move
         # update the map with their pose
-        pass
+
+
+        # MOVE ROBOTS
+        vel = ACTION_LIST[action]
+        p_pose = self.map.r_p.move([vel[0], vel[1]])
+        e_pose = self.map.r_e.move([vel[0], vel[1]])
+
+        p_observation = self.map.senseEvader()
+        e_observation = self.map.sensePursuer()
+
+        p_state = np.array([p_pose[0], p_pose[1], p_pose[2], p_observation])
+        e_state = np.array([e_pose[0], e_pose[1], e_pose[2], e_observation])
+
+        done = self.haveCollided()
+
+        if done == True:
+            p_reward = 100
+            e_reward = -100
+        else:
+            p_reward = -1
+            e_reward = 1
+
+        return e_state, p_state, e_reward, p_reward, done
+
 
     def reset(self):
         # Reset the state of the environment to an initial state
         # reset to random robot starting positions so we can make sure they
         # all converge to the same solution
-        self.pursuer_state = self.generate_random_pos() # numpy random (x, y, theta)
-        self.evader_state = self.generate_random_pos() # numpy random (x, y, theta)
-        self.pursuer_observation = self.get_observation(self.current_map, self.pursuer_state, self. evader_state)
-        self.evader_observation = self.get_obeservation(self.current_map, self.pursuer_state, self. evader_state)
+        self.map.r_p.pose = self.generateRandomPos() # numpy random (x, y, theta)
+        self.map.r_e.pose = self.generateRandomPos() # numpy random (x, y, theta)
+        self.p_observation = self.map.senseEvader()
+        self.e_observation = self.map.sensePursuer()
 
-    def checkForObstacle(arg):
-        pass
+    # define states as state =  (y, x, theta)
 
-    def generate_random_pos(arg):
+
+    def generateRandomPos(self):
         heightRange = range(self.width)
         widthRange = range(self.width)
         thetaRange = range(self.theta)
-
-
-        possiblePos = filter(checkForObstacle, zip(heightRange, widthRange))
 
         while True:
             # randomize position
             x = np.random.choice(widthRange, 1)
             y = np.random.choice(heightRange, 1)
 
-            if checkForObstacle(x, y):
+            if not self.map.checkForObstacle(x, y):
                 theta = np.random.choice(thetaRange, 1)
                 break
 
         return (x, y, theta)
 
-    def checkForObstacle(x, y):
-        return True
-
-
     def render(self, mode='human', close=False, **kwargs):
         # Render the environment to the screen
-        self.visualization = environmentPlot(self.df, title="Test")
 
-        if self.current_step > LOOKBACK_WINDOW_SIZE:
-            self.visualization.render(self.current_step, self.net_worth,
-            self.trades, window_size=LOOKBACK_WINDOW_SIZE)
-        draw_screen()
+        self.ax.imshow(self.ax, self.map.grid, origin='lower')
+        self.ax.plot(m.r_p.pose[0], m.r_p.pose[1], 'bo', label='Pursuer')
+        self.ax.plot(m.r_e.pose[0], m.r_e.pose[1], 'ro', label='Evader')
+        self.ax.legend()
+        # Show the graph without blocking the rest of the program
+        self.fig.show(block=False)
