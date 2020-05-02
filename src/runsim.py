@@ -56,14 +56,16 @@ def main():
             j+=1
             # Choose action from Q table
             a = np.argmax(Q[s] + np.random.randn(1,env.action_space.n)*(1./(i+1)))
-            print(Q[s].shape)
 
             #Get new state & reward from environment
             s1, s2, r, r2, d = env.step(a)
+            print("s1" + str(s1))
+            print("Q shape" + str(Q.shape))
             #Update Q-Table with new knowledge
-            Q[s,a] = Q[s,a] + eta*(r + gma*np.max(Q[s1,:]) - Q[s,a])
+            Q[s][a] = Q[s][a] + eta*(r + gma*np.max(Q[s1]) - Q[s][a])
             rAll += r
             s = s1
+
             if d == True:
                 break
         rev_list.append(rAll)

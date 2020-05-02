@@ -4,6 +4,7 @@
 import gym
 import numpy as np
 from map import Map
+from robot import Robot
 import matplotlib.pyplot as plt
 from gym import spaces, error, utils
 from gym.utils import seeding
@@ -23,6 +24,7 @@ N_DISCRETE_Z = len(Z_LIST)
 HEIGHT = 100
 WIDTH = 100
 THETA = 4
+THETALIST = [0, 90, 180, 270]
 
 
 
@@ -70,11 +72,13 @@ class TurtleBotTag(gym.Env):
 
         # MOVE ROBOTS
         vel = ACTION_LIST[action]
-        p_pose = self.map.r_p.move([vel[0], vel[1]])
-        e_pose = self.map.r_e.move([vel[0], vel[1]])
+        p_pose = self.map.r_p.move([vel[0], vel[1]], self.map)
+        e_pose = self.map.r_e.move([vel[0], vel[1]], self.map)
 
         p_observation = self.map.senseEvader()
         e_observation = self.map.sensePursuer()
+
+        print("e_observation " + str(p_observation))
 
         p_state = tuple([int(x) for x in np.array([p_pose[0], p_pose[1], p_pose[2], p_observation])])
         e_state = tuple([int(x) for x in np.array([e_pose[0], e_pose[1], e_pose[2], e_observation])])
@@ -132,7 +136,7 @@ class TurtleBotTag(gym.Env):
 
     def render(self):
         # Render the environment to the screen
-
+        plt.cla()
         plt.imshow(self.map.grid, origin='lower')
         plt.plot(self.map.r_p.pose[0], self.map.r_p.pose[1], 'bo', label='Pursuer')
         plt.plot(self.map.r_e.pose[0], self.map.r_e.pose[1], 'ro', label='Evader')

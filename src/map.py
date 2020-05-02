@@ -32,15 +32,6 @@ class Map:
         else:
             return True
 
-    def checkForObstacle(self, x, y):
-        # check if the desired next state is a wall ( == 1)
-        if self.grid[x,y] == 1:
-            # return initial state if obstacle found
-            return True
-        else:
-            # return next state if no obstacle found
-            return False
-
     def sensePursuer(self):
         return self.r_p.senseRobot(self.r_e.pose)
 
@@ -52,6 +43,17 @@ class Map:
         if dist <= 1:
             return True
         else:
+            return False
+
+    def checkForObstacle(self, x, y):
+        x = int(x)
+        y = int(y)
+        # check if the desired next state is a wall ( == 1)
+        if self.grid[x,y] == 1:
+            # return initial state if obstacle found
+            return True
+        else:
+            # return next state if no obstacle found
             return False
 
 

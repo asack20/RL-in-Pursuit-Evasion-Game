@@ -21,17 +21,20 @@ class Robot:
 
     # Moves
     # vel = [linear, rotation]
-    def move(self, vel):
-        new_x = self.pose[0] + vel[0] * np.cos(self.pose[2]) * self.LIN_VEL_COEF
-        new_y = self.pose[1] + vel[0] * np.sin(self.pose[2]) * self.LIN_VEL_COEF
-        new_or = self.pose[2] + vel[1] * self.ANG_VEL_COEF
+    def move(self, vel, map):
+        new_x = self.pose[0] + vel[0] * np.cos(self.pose[2]) * self.LIN_VEL_COEF - 1
+        new_y = self.pose[1] + vel[0] * np.sin(self.pose[2]) * self.LIN_VEL_COEF - 1
+        new_or = (self.pose[2] + vel[1] * self.ANG_VEL_COEF) % 4
 
         if vel[1] != 0:
-            new_x = new_x + vel[0] * np.cos(new_or) * self.LIN_VEL_COEF
-            new_y = new_y + vel[0] * np.sin(new_or) * self.LIN_VEL_COEF
+            new_x = new_x + vel[0] * np.cos(new_or) * self.LIN_VEL_COEF - 1
+            new_y = new_y + vel[0] * np.sin(new_or) * self.LIN_VEL_COEF - 1
 
-        self.pose = (new_x, new_y, new_or)
-        return self.pose
+        if map.checkForObstacle(new_x, new_y):
+            return self.pose
+        else:
+            self.pose = (new_x, new_y, new_or)
+            return self.pose
     #
     # #Sets Robot vel for moving
     #
@@ -56,4 +59,5 @@ class Robot:
         if reading > 5:
             reading = 6
         return reading
+
 #10 substeps
