@@ -80,7 +80,7 @@ def main():
                 break
 
         rev_list_p.append(rAll_p)
-        rev_list_e.append(rAll_p)
+        rev_list_e.append(rAll_e)
         steps_list.append(j)
         env.render()
 
@@ -100,9 +100,9 @@ def main():
 
     np.save(fname + "/bestPolicyQTableP", Q_p)
     np.save(fname + "/bestPolicyQTableE", Q_e)
-    np.savetxt(fname + "/RevListP", rev_list_p)
-    np.savetxt(fname + "/RevListE", rev_list_e)
-    np.savetxt(fname + "/StepsList", steps_list)
+    np.savetxt(fname + "/RevListP.txt", rev_list_p)
+    np.savetxt(fname + "/RevListE.txt", rev_list_e)
+    np.savetxt(fname + "/StepsList.txt", steps_list)
 
 
 if __name__ == '__main__':
