@@ -4,7 +4,7 @@ from robot import Robot
 class Map:
 
     # Class Attribute
-    grid_sz = (40, 40)
+    grid_sz = (10, 10)
     #grid
     #r_p # pursuer robot object
     #r_e # evader robot object
@@ -48,8 +48,12 @@ class Map:
     def checkForObstacle(self, x, y):
         x = int(x)
         y = int(y)
-        # check if the desired next state is a wall ( == 1)
-        if self.grid[x,y] == 1:
+
+        # check if the desired next state is out of bounds or a wall ( == 1)
+        if y > self.grid.shape[0] - 1 or y < 0 or x > self.grid.shape[0] - 1 or x < 0:
+            # return initial state if out of bounds
+            return True
+        elif self.grid[x, y] == 1:
             # return initial state if obstacle found
             return True
         else:

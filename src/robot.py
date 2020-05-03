@@ -1,6 +1,8 @@
 import numpy as np
 import random
 
+THETALIST = [0, np.pi/2, np.pi, 3/2*np.pi]
+
 class Robot:
 
     # Class Attribute
@@ -22,18 +24,33 @@ class Robot:
     # Moves
     # vel = [linear, rotation]
     def move(self, vel, map):
-        new_x = self.pose[0] + vel[0] * np.cos(self.pose[2]) * self.LIN_VEL_COEF - 1
-        new_y = self.pose[1] + vel[0] * np.sin(self.pose[2]) * self.LIN_VEL_COEF - 1
-        new_or = (self.pose[2] + vel[1] * self.ANG_VEL_COEF) % 4
+        #print("Current Pose: ", self.pose)
+        #print("Current Action: ", vel)
+
+        # convert from state space to actual values
+        curr_theta = THETALIST[self.pose[2]]
+
+        new_x = self.pose[0] + vel[0] * np.cos(curr_theta) * self.LIN_VEL_COEF
+        new_y = self.pose[1] + vel[0] * np.sin(curr_theta) * self.LIN_VEL_COEF
+        new_or = (self.pose[2] + vel[1]) % 4
+        new_theta = THETALIST[new_or]
+        #new_or = (self.pose[2] + vel[1] * self.ANG_VEL_COEF) % 4
 
         if vel[1] != 0:
-            new_x = new_x + vel[0] * np.cos(new_or) * self.LIN_VEL_COEF - 1
-            new_y = new_y + vel[0] * np.sin(new_or) * self.LIN_VEL_COEF - 1
+            new_x = new_x + vel[0] * np.cos(new_theta) * self.LIN_VEL_COEF
+            new_y = new_y + vel[0] * np.sin(new_theta) * self.LIN_VEL_COEF
+
+        # convert back to state space
+        new_x = int(np.rint(new_x))
+        new_y = int(np.rint(new_y))
+        new_or = int(np.rint(new_or))
 
         if map.checkForObstacle(new_x, new_y):
+            #print("Hitting wall, New Pose: ", self.pose)
             return self.pose
         else:
             self.pose = (new_x, new_y, new_or)
+            #print("Not hitting wall, New Pose: ", self.pose)
             return self.pose
     #
     # #Sets Robot vel for moving
