@@ -78,8 +78,8 @@ class TurtleBotTag(gym.Env):
         #print("PURSUER new pose: ", p_pose)
         #print("EVADER new pose: ", e_pose)
 
-        p_observation = self.map.senseEvader()
-        e_observation = self.map.sensePursuer()
+        p_observation = self.map.pursuerScanner()
+        e_observation = self.map.evaderScanner()
 
         # print("e_observation " + str(p_observation))
 
@@ -103,14 +103,14 @@ class TurtleBotTag(gym.Env):
         # all converge to the same solution
         self.map.r_p.pose = self.generateRandomPos()  # numpy random (x, y, theta)
         self.map.r_e.pose = self.generateRandomPos()  # numpy random (x, y, theta)
-        self.p_observation = self.map.senseEvader()
-        self.e_observation = self.map.sensePursuer()
+        self.p_observation = self.map.pursuerScanner()
+        self.e_observation = self.map.evaderScanner()
 
         p_pose = self.map.r_p.pose
         e_pose = self.map.r_e.pose
 
-        p_observation = self.map.senseEvader()
-        e_observation = self.map.sensePursuer()
+        p_observation = self.map.pursuerScanner()
+        e_observation = self.map.evaderScanner()
 
         p_state = tuple([int(x) for x in np.array([p_pose[0], p_pose[1], p_pose[2], p_observation])])
         e_state = tuple([int(x) for x in np.array([e_pose[0], e_pose[1], e_pose[2], e_observation])])

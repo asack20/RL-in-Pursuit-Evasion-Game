@@ -32,10 +32,10 @@ class Map:
         else:
             return True
 
-    def sensePursuer(self):
+    def pursuerScanner(self):
         return self.r_p.senseRobot(self.r_e.pose)
 
-    def senseEvader(self):
+    def evaderScanner(self):
         return self.r_e.senseRobot(self.r_p.pose)
 
     def haveCollided(self):
