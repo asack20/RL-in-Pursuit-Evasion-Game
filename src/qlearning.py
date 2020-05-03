@@ -11,6 +11,7 @@ from matplotlib.collections import PatchCollection
 from gym import spaces, error, utils
 from gym.utils import seeding
 import time
+import os
 
 # linear vel = [0, 1]
 # angular vel = [-1, 0, 1]
@@ -30,6 +31,12 @@ THETALIST = [0, np.pi/2, np.pi, 3/2*np.pi]
 class TurtleBotTag(gym.Env):
     """Custom Environment that follows gym interface"""
     metadata = {'render.modes': ['human']}
+    epis = 0
+    step_num = 0
+    RENDER_FREQ = 1
+    PRINT_CONSOLE = True
+    RENDER_PLOTS = True
+    SAVE_PLOTS = True
 
     def __init__(self):
         super(TurtleBotTag, self).__init__()
@@ -37,6 +44,17 @@ class TurtleBotTag(gym.Env):
         # They must be gym.spaces objects
         self.fig = plt.figure()
         self.ax = self.fig.axes
+
+        parent_dir = os.getcwd()
+        curr_time = time.gmtime()
+        directory1 = time.strftime("../results/%d_%b_%Y_%H_%M_%S", curr_time)
+        self.dir_name = os.path.join(parent_dir, directory1)
+        os.mkdir(self.dir_name)
+
+        if self.SAVE_PLOTS:
+            directory = time.strftime("../results/%d_%b_%Y_%H_%M_%S/figures", curr_time)
+            self.dir_name_plots = os.path.join(parent_dir, directory)
+            os.mkdir(self.dir_name_plots)
 
         # Obtain current map for training
         self.map = Map()
@@ -88,12 +106,21 @@ class TurtleBotTag(gym.Env):
 
         done = self.map.haveCollided()
 
+        p_reward = 0
+        e_reward = 0
+
+        # reward observation of other robot
+        if p_observation != 6:
+            p_reward += 2
+        if e_observation != 6:
+            e_reward += -2
+
         if done == True:
-            p_reward = 100
-            e_reward = -100
+            p_reward += 100
+            e_reward += -100
         else:
-            p_reward = -1
-            e_reward = 1
+            p_reward += -1
+            e_reward += 1
 
         return p_state, e_state, p_reward, e_reward, done
 
@@ -136,29 +163,37 @@ class TurtleBotTag(gym.Env):
         return (x, y, theta)
 
     def render(self):
-        # Render the environment to the screen
-        plt.cla()
-        plt.imshow(self.map.grid, origin='lower')
-        plt.plot(self.map.r_p.pose[0], self.map.r_p.pose[1], 'bo', label='Pursuer')
-        plt.plot(self.map.r_e.pose[0], self.map.r_e.pose[1], 'ro', label='Evader')
+        if self.PRINT_CONSOLE and self.step_num == 0 and self.epis%10 == 0:
+            print('Episode: ' + str(self.epis))
 
-        p_theta1 = 180/np.pi*(self.map.r_p.THETALIST[self.map.r_p.pose[2]] - self.map.r_p.fov/2)
-        p_theta2 = 180/np.pi*(self.map.r_p.THETALIST[self.map.r_p.pose[2]] + self.map.r_p.fov/2)
-        p_wedge = Wedge((self.map.r_p.pose[0],self.map.r_p.pose[1]),self.map.r_p.VIEW_DIST, p_theta1, p_theta2, facecolor='b' )
+        if self.RENDER_PLOTS and self.epis % self.RENDER_FREQ == 0:
+            # Render the environment to the screen
+            plt.cla()
+            plt.imshow(self.map.grid, origin='lower')
+            plt.plot(self.map.r_p.pose[0], self.map.r_p.pose[1], 'bo', label='Pursuer')
+            plt.plot(self.map.r_e.pose[0], self.map.r_e.pose[1], 'ro', label='Evader')
 
-        e_theta1 = 180/np.pi*(self.map.r_e.THETALIST[self.map.r_e.pose[2]] - self.map.r_e.fov / 2)
-        e_theta2 = 180/np.pi*(self.map.r_e.THETALIST[self.map.r_e.pose[2]] + self.map.r_e.fov / 2)
-        e_wedge = Wedge((self.map.r_e.pose[0], self.map.r_e.pose[1]), self.map.r_e.VIEW_DIST, e_theta1, e_theta2, facecolor='r')
+            p_theta1 = 180/np.pi*(self.map.r_p.THETALIST[self.map.r_p.pose[2]] - self.map.r_p.fov/2)
+            p_theta2 = 180/np.pi*(self.map.r_p.THETALIST[self.map.r_p.pose[2]] + self.map.r_p.fov/2)
+            p_wedge = Wedge((self.map.r_p.pose[0],self.map.r_p.pose[1]),self.map.r_p.VIEW_DIST, p_theta1, p_theta2, facecolor='b' )
 
-        patches = []
-        patches.append(p_wedge)
-        patches.append(e_wedge)
-        p = PatchCollection(patches, alpha=0.8)
-        ax = plt.gca()
-        ax.add_collection(p)
+            e_theta1 = 180/np.pi*(self.map.r_e.THETALIST[self.map.r_e.pose[2]] - self.map.r_e.fov / 2)
+            e_theta2 = 180/np.pi*(self.map.r_e.THETALIST[self.map.r_e.pose[2]] + self.map.r_e.fov / 2)
+            e_wedge = Wedge((self.map.r_e.pose[0], self.map.r_e.pose[1]), self.map.r_e.VIEW_DIST, e_theta1, e_theta2, facecolor='r')
 
-        plt.legend(loc='lower left')
-        # Show the graph without blocking the rest of the program
+            patches = []
+            patches.append(p_wedge)
+            patches.append(e_wedge)
+            p = PatchCollection(patches, alpha=0.8)
+            ax = plt.gca()
+            ax.add_collection(p)
 
-        plt.draw()
-        plt.pause(0.005)
+            plt.legend(loc='lower left')
+            plt.title('Episode: ' + str(self.epis) + '    Step: ' + str(self.step_num))
+            # Show the graph without blocking the rest of the program
+
+            plt.draw()
+            if self.SAVE_PLOTS:
+                fname = self.dir_name_plots + '/epis' + str(self.epis) +'_step' +str(self.step_num)
+                plt.savefig(fname)
+            plt.pause(0.005)

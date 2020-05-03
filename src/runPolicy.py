@@ -8,27 +8,19 @@ from qlearning import TurtleBotTag
 import datetime
 
 def main():
+
     samples = 100
     iterations = 100
 
 
-    # 0. Create instance of custom environment
-
-#reward
-#pursuer
-#done +100
-# time -1
-# see +5 (try with and without)
-
-#evader
-#done -100
-#time +1
-#see -5
-
     # 1. Load Environment and Q-table structure
     env = TurtleBotTag()
-    Q_p = np.zeros(env.Q_dim)
-    Q_e = np.zeros(env.Q_dim)
+
+    parent_dir = os.getcwd()
+    directory1 = "../results/"
+    dir_name = os.path.join(parent_dir, directory1)
+    Q_p = np.load(dir_name + "03_May_2020_19_45_43/bestPolicyQTableP")
+    Q_e = np.load(dir_name + "03_May_2020_19_45_43/bestPolicyQTableE")
 
     # 2. Parameters of Q-leanring
     eta = .628
@@ -57,19 +49,11 @@ def main():
             env.render()
             j += 1
 
-            # Choose action from Q table
-            a_p = np.argmax(Q_p[s_p] + np.random.randn(1, env.action_space.n)*(epis/2./(i+1)))
-            a_e = np.argmax(Q_e[s_e] + np.random.randn(1, env.action_space.n)*(epis/2./(i+1)))
+            # Choose best action from Q table
+            a_p = np.argmax(Q_p[s_p])
+            a_e = np.argmax(Q_e[s_e])
 
-            #qprint("action selected:" + str(a))
-            #Get new state & reward from environment
             s1_p, s1_e, r_p, r_e, d = env.step(a_p, a_e)
-            #print("s1" + str(s1))
-            #print("Q shape" + str(Q.shape))
-
-            # Update Q-Table with new knowledge
-            Q_p[s_p][a_p] = Q_p[s_p][a_p] + eta*(r_p + gma*np.max(Q_p[s1_p]) - Q_p[s_p][a_p])
-            Q_e[s_e][a_e] = Q_e[s_e][a_e] + eta*(r_e + gma*np.max(Q_e[s1_e]) - Q_e[s_e][a_e])
 
             rAll_p += r_p
             rAll_e += r_e
@@ -90,7 +74,7 @@ def main():
     print("Evader Final Values Q-Table:\n", Q_e)
 
     fname = env.dir_name
-    fP = open(fname + "/bestPolicyStats.txt","w+")
+    fP = open(fname + "bestPolicyStats.txt","w+")
     fP.write("Pursuer Final Values Q-Table:\n")
     fP.write("eta = " + str(eta) + "\n")
     fP.write("gma = " + str(gma) + "\n" )
@@ -98,11 +82,11 @@ def main():
     fP.write("epis = " + str(epis) + "\n")
     fP.close()
 
-    np.save(fname + "/bestPolicyQTableP", Q_p)
-    np.save(fname + "/bestPolicyQTableE", Q_e)
-    np.savetxt(fname + "/RevListP", rev_list_p)
-    np.savetxt(fname + "/RevListE", rev_list_e)
-    np.savetxt(fname + "/StepsList", steps_list)
+    np.save(fname + "bestPolicyQTableP", Q_p)
+    np.save(fname + "bestPolicyQTableE", Q_e)
+    np.savetxt(fname + "RevListP", rev_list_p)
+    np.savetxt(fname + "RevListE", rev_list_e)
+    np.savetxt(fname + "StepsList", steps_list)
 
 
 if __name__ == '__main__':

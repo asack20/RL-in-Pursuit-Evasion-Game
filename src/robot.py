@@ -8,7 +8,7 @@ class Robot:
     # Class Attribute
     # pose (x, y, orientation)
     # fov - field of view in radians
-    SENSOR_NOISE_COEF = 0.1
+    SENSOR_NOISE_COEF = 0 # was 0.1
     ANG_VEL_COEF = np.pi / 2
     LIN_VEL_COEF = 1
     VIEW_DIST = 5

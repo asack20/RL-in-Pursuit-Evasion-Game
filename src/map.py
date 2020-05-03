@@ -4,7 +4,7 @@ from robot import Robot
 class Map:
 
     # Class Attribute
-    grid_sz = (10, 10)
+    grid_sz = (20, 20)
     #grid
     #r_p # pursuer robot object
     #r_e # evader robot object
@@ -40,7 +40,7 @@ class Map:
 
     def haveCollided(self):
         dist = np.sqrt(np.square(self.r_p.pose[0]-self.r_e.pose[0]) + np.square(self.r_p.pose[1]-self.r_e.pose[1]))
-        if dist <= 1:
+        if dist <= 1.5:
             return True
         else:
             return False
