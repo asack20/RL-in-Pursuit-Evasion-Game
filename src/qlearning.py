@@ -6,6 +6,8 @@ import numpy as np
 from map import Map
 from robot import Robot
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle, Wedge, Polygon
+from matplotlib.collections import PatchCollection
 from gym import spaces, error, utils
 from gym.utils import seeding
 import time
@@ -139,6 +141,22 @@ class TurtleBotTag(gym.Env):
         plt.imshow(self.map.grid, origin='lower')
         plt.plot(self.map.r_p.pose[0], self.map.r_p.pose[1], 'bo', label='Pursuer')
         plt.plot(self.map.r_e.pose[0], self.map.r_e.pose[1], 'ro', label='Evader')
+
+        p_theta1 = 180/np.pi*(self.map.r_p.THETALIST[self.map.r_p.pose[2]] - self.map.r_p.fov/2)
+        p_theta2 = 180/np.pi*(self.map.r_p.THETALIST[self.map.r_p.pose[2]] + self.map.r_p.fov/2)
+        p_wedge = Wedge((self.map.r_p.pose[0],self.map.r_p.pose[1]),self.map.r_p.VIEW_DIST, p_theta1, p_theta2, facecolor='b' )
+
+        e_theta1 = 180/np.pi*(self.map.r_e.THETALIST[self.map.r_e.pose[2]] - self.map.r_e.fov / 2)
+        e_theta2 = 180/np.pi*(self.map.r_e.THETALIST[self.map.r_e.pose[2]] + self.map.r_e.fov / 2)
+        e_wedge = Wedge((self.map.r_e.pose[0], self.map.r_e.pose[1]), self.map.r_e.VIEW_DIST, e_theta1, e_theta2, facecolor='r')
+
+        patches = []
+        patches.append(p_wedge)
+        patches.append(e_wedge)
+        p = PatchCollection(patches, alpha=0.8)
+        ax = plt.gca()
+        ax.add_collection(p)
+
         plt.legend(loc='lower left')
         # Show the graph without blocking the rest of the program
 

@@ -11,6 +11,9 @@ class Robot:
     SENSOR_NOISE_COEF = 0.1
     ANG_VEL_COEF = np.pi / 2
     LIN_VEL_COEF = 1
+    VIEW_DIST = 5
+    NUM_DISTS = 5
+    THETALIST = [0, np.pi / 2, np.pi, 3 / 2 * np.pi]
     # Initializer / Instance Attributes
     # Sets initializes robot pose and properties
     def __init__(self, init_pose, fov):
@@ -68,13 +71,13 @@ class Robot:
         ang =  np.arctan2(other_pose[1]-self.pose[1], other_pose[0]-self.pose[0])
 
         if np.abs(ang - self.pose[2]) > self.fov/2:
-            return 6
+            return self.NUM_DISTS+1
 
-        reading = np.round(dist + dist * random.gauss(0,1) * self.SENSOR_NOISE_COEF)
+        reading = np.round((dist + dist * random.gauss(0,1) * self.SENSOR_NOISE_COEF)/(self.VIEW_DIST/self.NUM_DISTS))
         if reading < 0:
             reading = 0
-        if reading > 5:
-            reading = 6
+        if reading > self.NUM_DISTS:
+            reading = self.NUM_DISTS+1
         return reading
 
 #10 substeps
