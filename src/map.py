@@ -32,12 +32,15 @@ class Map:
         else:
             return True
 
+    #function for taking a sensor reading from the pursuer of the evader
     def sensePursuer(self):
         return self.r_p.senseRobot(self.r_e.pose)
 
+    #function for taking a sensor reading from the evader of the pursuer
     def senseEvader(self):
         return self.r_e.senseRobot(self.r_p.pose)
 
+    # Checks if the 2 agents are within 1 tile of each other
     def haveCollided(self):
         dist = np.sqrt(np.square(self.r_p.pose[0]-self.r_e.pose[0]) + np.square(self.r_p.pose[1]-self.r_e.pose[1]))
         if dist <= 1:
@@ -61,7 +64,7 @@ class Map:
             return False
 
 
-    # Does nothing
+    # NOT USED
     # Returns state of surrounding tiles (no robot)
     def getSurroundings(self, pose):
         # 0  open, 1 wall/outofbounds, 2 Robot
