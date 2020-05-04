@@ -31,15 +31,15 @@ def main():
     Q_e = np.zeros(env.Q_dim)
 
     # 2. Parameters of Q-leanring
-    eta = .25
+    eta = .005
     gma = .9
     epsilon = 1.1
     step_num = 999
-    epis = 20000
+    epis = 200000
     rev_list_p = []  # rewards per episode calculate
     rev_list_e = []  # rewards per episode calculate
     steps_list = []  # steps per episode
-    env.RENDER_FREQ = 2000  # How often to render an episode
+    env.RENDER_FREQ = 50000  # How often to render an episode
     env.RENDER_PLOTS = True  # whether or not to render plots
     env.SAVE_PLOTS = True  # Whether or not to save plots
 
@@ -52,7 +52,7 @@ def main():
         d = False
         j = 0
         if i != 0:
-            epsilon = 1/np.floor(i/1000)
+            epsilon = 1/np.floor(i/epis/20)
         env.epis = i
         # The Q-Table learning algorithm
         while j < step_num:

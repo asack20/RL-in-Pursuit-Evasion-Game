@@ -19,11 +19,11 @@ def main():
     parent_dir = os.getcwd()
     directory1 = "../results/"
     dir_name = os.path.join(parent_dir, directory1)
-    Q_p = np.load(dir_name + "03_May_2020_23_17_53/bestPolicyQTableP.npy")
-    Q_e = np.load(dir_name + "03_May_2020_23_17_53/bestPolicyQTableE.npy")
+    Q_p = np.load(dir_name + "04_May_2020_13_43_30/bestPolicyQTableP.npy")
+    Q_e = np.load(dir_name + "04_May_2020_13_43_30/bestPolicyQTableE.npy")
 
     # 2. Parameters of Q-leanring
-    eta = .628
+    eta = .01
     gma = .9
     step_num = 999
     epis = 10
@@ -73,6 +73,7 @@ def main():
     print("Pursuer Final Values Q-Table:\n", Q_p)
     print("Evader Final Values Q-Table:\n", Q_e)
 
+    '''
     fname = env.dir_name
     fP = open(fname + "bestPolicyStats.txt","w+")
     fP.write("Pursuer Final Values Q-Table:\n")
@@ -87,7 +88,7 @@ def main():
     np.savetxt(fname + "RevListP", rev_list_p)
     np.savetxt(fname + "RevListE", rev_list_e)
     np.savetxt(fname + "StepsList", steps_list)
-
+    '''
 
 if __name__ == '__main__':
     main()
