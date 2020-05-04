@@ -84,9 +84,9 @@ def main():
     fP.write("epis = " + str(epis) + "\n")
     fP.close()
 
-    np.savetxt(fname + "RevListP", rev_list_p)
-    np.savetxt(fname + "RevListE", rev_list_e)
-    np.savetxt(fname + "StepsList", steps_list)
+    np.savetxt(fname + "RevListP.txt", rev_list_p)
+    np.savetxt(fname + "RevListE.txt", rev_list_e)
+    np.savetxt(fname + "StepsList.txt", steps_list)
 
     '''
     fname = env.dir_name
