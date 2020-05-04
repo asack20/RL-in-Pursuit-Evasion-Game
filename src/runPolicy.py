@@ -6,12 +6,12 @@ from map import Map
 from robot import Robot
 from qlearning import TurtleBotTag
 import datetime
+import os
 
 def main():
 
     samples = 100
     iterations = 100
-
 
     # 1. Load Environment and Q-table structure
     env = TurtleBotTag()
@@ -19,18 +19,18 @@ def main():
     parent_dir = os.getcwd()
     directory1 = "../results/"
     dir_name = os.path.join(parent_dir, directory1)
-    Q_p = np.load(dir_name + "03_May_2020_19_45_43/bestPolicyQTableP")
-    Q_e = np.load(dir_name + "03_May_2020_19_45_43/bestPolicyQTableE")
+    Q_p = np.load(dir_name + "03_May_2020_23_17_53/bestPolicyQTableP.npy")
+    Q_e = np.load(dir_name + "03_May_2020_23_17_53/bestPolicyQTableE.npy")
 
     # 2. Parameters of Q-leanring
     eta = .628
     gma = .9
     step_num = 999
-    epis = 20000
+    epis = 10
     rev_list_p = [] # rewards per episode calculate
     rev_list_e = [] # rewards per episode calculate
     steps_list = [] # steps per episode
-    env.RENDER_FREQ = 2000 # How often to render an episode
+    env.RENDER_FREQ = 1 # How often to render an episode
     env.RENDER_PLOTS = True # whether or not to render plots
     env.SAVE_PLOTS = False # Whether or not to save plots
 
