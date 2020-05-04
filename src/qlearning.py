@@ -19,7 +19,7 @@ ACTION_LIST_NAMES = ["stop", "forward", "turn_left", "turn_right", "turn_and_mov
 ACTION_LIST = [(0, 0), (1, 0), (0, -1), (0, 1), (1, -1), (1, 1)]
 N_DISCRETE_ACTIONS = len(ACTION_LIST)
 
-Z_LIST = [0, 1, 2, 3, 4, 5, 6]
+Z_LIST = [0, 1]
 N_DISCRETE_Z = len(Z_LIST)
 
 HEIGHT = 100
@@ -99,7 +99,8 @@ class TurtleBotTag(gym.Env):
         p_observation = self.map.pursuerScanner()
         e_observation = self.map.evaderScanner()
 
-        # print("e_observation " + str(p_observation))
+        #print("p_observation " + str(p_observation))
+        #print("e_observation " + str(e_observation))
 
         p_state = tuple([int(x) for x in np.array([p_pose[0], p_pose[1], p_pose[2], p_observation])])
         e_state = tuple([int(x) for x in np.array([e_pose[0], e_pose[1], e_pose[2], e_observation])])
@@ -110,9 +111,9 @@ class TurtleBotTag(gym.Env):
         e_reward = 0
 
         # reward observation of other robot
-        if p_observation != 6:
+        if p_observation != N_DISCRETE_Z - 1:
             p_reward += 2
-        if e_observation != 6:
+        if e_observation != N_DISCRETE_Z - 1:
             e_reward += -2
 
         if done == True:
@@ -194,6 +195,6 @@ class TurtleBotTag(gym.Env):
 
             plt.draw()
             if self.SAVE_PLOTS:
-                fname = self.dir_name_plots + '/epis' + str(self.epis) +'_step' +str(self.step_num)
+                fname = self.dir_name_plots + '/epis' + str(self.epis).zfill(5) +'_step' +str(self.step_num).zfill(5)
                 plt.savefig(fname)
             plt.pause(0.005)

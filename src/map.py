@@ -5,6 +5,7 @@ class Map:
 
     # Class Attribute
     grid_sz = (20, 20)
+    fov = np.pi
     #grid
     #r_p # pursuer robot object
     #r_e # evader robot object
@@ -17,8 +18,8 @@ class Map:
             for j in range(self.grid_sz[1]//10):
                 self.grid[(i*10):(i*10)+5, (j*10):(j*10)+5] = np.ones((5,5))
 
-        self.r_p = Robot((0,0,0), np.pi/2)
-        self.r_e = Robot((0,0,0), np.pi/2)
+        self.r_p = Robot((0,0,0), self.fov)
+        self.r_e = Robot((0,0,0), self.fov)
 
     # Checks if input is in an open space in Map
     def validSpace(self, pose):

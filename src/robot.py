@@ -66,18 +66,25 @@ class Robot:
     def inCell(self):
         return (self.pose[1]//1, self.pose[0]//1)
 
+
     def senseRobot(self, other_pose):
         dist = np.sqrt(np.square(self.pose[0]-other_pose[0]) + np.square(self.pose[1]-other_pose[1]))
         ang =  np.arctan2(other_pose[1]-self.pose[1], other_pose[0]-self.pose[0])
 
         if np.abs(ang - self.pose[2]) > self.fov/2:
-            return self.NUM_DISTS+1
+            return 1
+            #return self.NUM_DISTS+1
 
         reading = np.round((dist + dist * random.gauss(0,1) * self.SENSOR_NOISE_COEF)/(self.VIEW_DIST/self.NUM_DISTS))
         if reading < 0:
             reading = 0
         if reading > self.NUM_DISTS:
             reading = self.NUM_DISTS+1
-        return reading
+
+        #return reading
+        if reading < self.NUM_DISTS+1:
+            return 0
+        else:
+            return 1
 
 #10 substeps

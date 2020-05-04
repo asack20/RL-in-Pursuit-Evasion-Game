@@ -31,16 +31,17 @@ def main():
     Q_e = np.zeros(env.Q_dim)
 
     # 2. Parameters of Q-leanring
-    eta = .628
+    eta = .25
     gma = .9
+    epsilon = 1.1
     step_num = 999
     epis = 20000
-    rev_list_p = [] # rewards per episode calculate
-    rev_list_e = [] # rewards per episode calculate
-    steps_list = [] # steps per episode
-    env.RENDER_FREQ = 2000 # How often to render an episode
-    env.RENDER_PLOTS = True # whether or not to render plots
-    env.SAVE_PLOTS = False # Whether or not to save plots
+    rev_list_p = []  # rewards per episode calculate
+    rev_list_e = []  # rewards per episode calculate
+    steps_list = []  # steps per episode
+    env.RENDER_FREQ = 2000  # How often to render an episode
+    env.RENDER_PLOTS = True  # whether or not to render plots
+    env.SAVE_PLOTS = True  # Whether or not to save plots
 
     # 3. Q-learning Algorithm
     for i in range(epis):
@@ -50,6 +51,8 @@ def main():
         rAll_e = 0
         d = False
         j = 0
+        if i != 0:
+            epsilon = 1/np.floor(i/1000)
         env.epis = i
         # The Q-Table learning algorithm
         while j < step_num:
@@ -57,9 +60,17 @@ def main():
             env.render()
             j += 1
 
-            # Choose action from Q table
-            a_p = np.argmax(Q_p[s_p] + np.random.randn(1, env.action_space.n)*(epis/2./(i+1)))
-            a_e = np.argmax(Q_e[s_e] + np.random.randn(1, env.action_space.n)*(epis/2./(i+1)))
+            # Choose action from Q table based on epsilon-greedy
+            if np.random.rand() > epsilon:
+                a_p = np.argmax(Q_p[s_p])
+                a_e = np.argmax(Q_e[s_e])
+            else:
+                a_p = np.random.randint(0, env.action_space.n)
+                a_e = np.random.randint(0, env.action_space.n)
+
+
+            #a_p = np.argmax(Q_p[s_p] + np.random.randn(1, env.action_space.n)*(epis/2./(i+1)))
+            #a_e = np.argmax(Q_e[s_e] + np.random.randn(1, env.action_space.n)*(epis/2./(i+1)))
 
             #qprint("action selected:" + str(a))
             #Get new state & reward from environment
