@@ -1,0 +1,6 @@
+Running Policy From: 04_May_2020_05_12_00
+Pursuer Final Values Q-Table:
+eta = 0.01
+gma = 0.9
+step_num = 250
+epis = 2

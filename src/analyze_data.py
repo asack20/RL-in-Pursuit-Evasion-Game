@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import scipy.signal as sig
 
 # CHANGE:
-dir = "../results/03_May_2020_21_50_40/"
+dir = "../results/04_May_2020_05_12_00/"
 
 rev_list_e = np.loadtxt(dir + "RevListE.txt")
 rev_list_p = np.loadtxt(dir + "RevListP.txt")

@@ -19,20 +19,21 @@ def main():
     parent_dir = os.getcwd()
     directory1 = "../results/"
     dir_name = os.path.join(parent_dir, directory1)
-    Q_p = np.load(dir_name + "04_May_2020_13_43_30/bestPolicyQTableP.npy")
-    Q_e = np.load(dir_name + "04_May_2020_13_43_30/bestPolicyQTableE.npy")
+    folder = '04_May_2020_05_12_00'
+    Q_p = np.load(dir_name + folder + "/bestPolicyQTableP.npy")
+    Q_e = np.load(dir_name + folder + "/bestPolicyQTableE.npy")
 
     # 2. Parameters of Q-leanring
     eta = .01
     gma = .9
-    step_num = 999
-    epis = 10
+    step_num = 250
+    epis = 2
     rev_list_p = [] # rewards per episode calculate
     rev_list_e = [] # rewards per episode calculate
     steps_list = [] # steps per episode
     env.RENDER_FREQ = 1 # How often to render an episode
     env.RENDER_PLOTS = True # whether or not to render plots
-    env.SAVE_PLOTS = False # Whether or not to save plots
+    env.SAVE_PLOTS = True # Whether or not to save plots
 
     # 3. Q-learning Algorithm
     for i in range(epis):
@@ -72,6 +73,20 @@ def main():
     print("Evader Reward Sum on all episodes " + str(sum(rev_list_e)/epis))
     print("Pursuer Final Values Q-Table:\n", Q_p)
     print("Evader Final Values Q-Table:\n", Q_e)
+
+    fname = env.dir_name
+    fP = open(fname + "bestPolicyStats.txt", "w+")
+    fP.write('Running Policy From: ' + folder + "\n" )
+    fP.write("Pursuer Final Values Q-Table:\n")
+    fP.write("eta = " + str(eta) + "\n")
+    fP.write("gma = " + str(gma) + "\n")
+    fP.write("step_num = " + str(step_num) + "\n")
+    fP.write("epis = " + str(epis) + "\n")
+    fP.close()
+
+    np.savetxt(fname + "RevListP", rev_list_p)
+    np.savetxt(fname + "RevListE", rev_list_e)
+    np.savetxt(fname + "StepsList", steps_list)
 
     '''
     fname = env.dir_name

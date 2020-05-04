@@ -1,7 +1,7 @@
 clear all;
 close all;
 
-folder = '04_May_2020_03_35_08';
+folder = '04_May_2020_17_58_17';
 epis_num = '00000';
 
 path = ['../results/' folder  '/figures'];
