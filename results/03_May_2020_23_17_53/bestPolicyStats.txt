@@ -1,0 +1,5 @@
+Pursuer Final Values Q-Table:
+eta = 0.628
+gma = 0.5
+step_num = 999
+epis = 20000
