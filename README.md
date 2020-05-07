@@ -1,4 +1,4 @@
-# ProbablyRobotics
+# Reinforcement Learning in Pursuit Evasion Game
 Tufts Probabilistic Robotics Spring 2020 Final Project
 
 # PursuitEvasionGame
